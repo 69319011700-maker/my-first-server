@@ -110,14 +110,14 @@ const server = http.createServer((req, res) => {
     </head>
     <body>
         <div class="container">
-            <h1>สวัสดีครับ! นี่คือ Web Server ของผม</h1>
+            <h1>สวัสดีค่ะ! นี่คือ Web Server ของฉัน</h1>
             <div class="student-info">
-                <strong>นาย นรากร สวนนาค</strong> <br>
+                <strong>นางสาว นรากร สวนนาค</strong> <br>
                 <span style="color: #94a3b8; font-size: 1rem;">รหัสนักศึกษา: 69319011700</span>
             </div>
             <div class="status-badge">
                 <div class="pulse-dot"></div>
-                <span>เครื่องแม่ข่ายทำงานปกติบนระบบ Railway แล้วครับผม!</span>
+                <span>เครื่องแม่ข่ายทำงานปกติบนระบบ Railway แล้วค่ะ!</span>
             </div>
         </div>
     </body>
