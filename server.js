@@ -1,9 +1,10 @@
 const http = require('http');  
 // 1. เรียกใชงาน Pool จากไลบรารี pg สำหรับจัดการการเชื่อมตอฐานขอมูล  
 const { Pool } = require('pg');  
-// 2. ตั้งคาการเชื่อมตอ โดยดึง URL มาจาก Environment Variable ของ Railway  const pool = new Pool({  
+// 2. ตั้งคาการเชื่อมตอ โดยดึง URL มาจาก Environment Variable ของ Railway  
+const pool = new Pool({  
  connectionString: process.env.DATABASE_URL,  
-};  
+});  
 const port = process.env.PORT || 3000;  
 const server = http.createServer(async (req, res) => {  
  res.statusCode = 200;  
