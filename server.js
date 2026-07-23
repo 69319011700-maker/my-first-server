@@ -1,11 +1,20 @@
 const http = require('http');
 // 1. เรียกใชงาน Pool จากไลบรารี pg สำหรับจัดการการเชื่อมตอฐานขอมูล
 const { Pool } = require('pg');
+
+// ตรวจสอบ DATABASE_URL
+if (!process.env.DATABASE_URL) {
+  console.error('❌ Error: DATABASE_URL environment variable is not set');
+  process.exit(1);
+}
+
 // 2. ตั้งคาการเชื่อมตอ โดยดึง URL มาจาก Environment Variable ของ Railway
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
-const port = process.env.PORT || 3000;
+
+const port = parseInt(process.env.PORT || '3000', 10);
+
 const server = http.createServer(async (req, res) => {
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
@@ -15,6 +24,13 @@ const server = http.createServer(async (req, res) => {
     const client = await pool.connect();
     const result = await client.query('SELECT * FROM students');
     client.release(); // คนืการเชื่อมตอเมื่อใชงานเสร็จ
+    
+    // 4. ตรวจสอบชื่อคอลัมน์ - หากไม่มีข้อมูลให้ใช้ชื่อปกติ
+    let columnNames = ['id', 'name']; // ชื่อคอลัมน์เริ่มต้น
+    if (result.rows.length > 0) {
+      columnNames = Object.keys(result.rows[0]); // ดึงชื่อคอลัมน์จริงจากข้อมูล
+    }
+
     // 4. นำขอมูลที่ได(result.rows) มาประกอบเปนตาราง HTML
 
     const html = `
@@ -299,15 +315,13 @@ const server = http.createServer(async (req, res) => {
                 <table>
                     <thead>
                         <tr>
-                            <th><i class="fas fa-id-card"></i> รหัสนักศึกษา</th>
-                            <th><i class="fas fa-user"></i> ชื่อ-นามสกุล</th>
+                            ${columnNames.map(col => `<th><i class="fas fa-tag"></i> ${col}</th>`).join('')}
                         </tr>
                     </thead>
                     <tbody>
                         ${result.rows.map((row, index) => `
                             <tr>
-                                <td>${row.student_id}</td>
-                                <td>${row.student_name}</td>
+                                ${columnNames.map(col => `<td>${row[col] || '-'}</td>`).join('')}
                             </tr>
                         `).join('')}
                     </tbody>
@@ -496,6 +510,7 @@ const server = http.createServer(async (req, res) => {
     res.end(errorHtml);
   }
 });
+
 server.listen(port, () => {
-  console.log(`Server is running on port: ${port}`);
+  console.log(`🚀 Server is running on port: ${port}`);
 });
